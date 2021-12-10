@@ -50,7 +50,7 @@ namespace RaspberryPi
                     {
                         File.WriteAllText(gpio.getExportPath(), number.ToString());
                     }
-                    Thread.Sleep(10);
+                    Thread.Sleep(20);
                     for(int i=0; !Directory.Exists(gpio.getPinFolderPath(number)) && i < 100; i++)
                     {
                         if(i==99){
