@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 
 namespace RaspberryPi
 {
@@ -49,7 +50,8 @@ namespace RaspberryPi
                     {
                         File.WriteAllText(gpio.getExportPath(), number.ToString());
                     }
-                    for(int i=0; !Directory.Exists(gpio.getPinFolderPath()) && i < 100; i++)
+                    Thread.Sleep(10);
+                    for(int i=0; !Directory.Exists(gpio.getPinFolderPath(number)) && i < 100; i++)
                     {
                         if(i==99){
                             Console.WriteLine("pin open timeout");
@@ -85,7 +87,7 @@ namespace RaspberryPi
             }
             public bool value
             {
-                get => gpio.isDebugMode ? gpio.debugValue[number - 1] == true : File.ReadAllText(gpio.getValuePath(number)) == "1";
+                get => gpio.isDebugMode ? gpio.debugValue[number - 1] == true : int.Parse(File.ReadAllText(gpio.getValuePath(number))) == 1;
                 set
                 {
                     if (gpio.isDebugMode)
