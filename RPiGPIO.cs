@@ -18,7 +18,9 @@ namespace RaspberryPi
         }
         protected string getValuePath(int number) => $"{BasePath}gpio{number}/value";
         protected string getDirectionPath(int number) => $"{BasePath}gpio{number}/direction";
+        protected string getPinFolderPath(int number) => $"{BasePath}gpio{number}";
         protected string getUnExportPath() => $"{BasePath}unexport";
+        protected string getExportPath() => $"{BasePath}export";
 
         public class Pin : IDisposable
         {
@@ -43,6 +45,17 @@ namespace RaspberryPi
                 }
                 else
                 {
+                    if (!Directory.Exists(gpio.getPinFolderPath(number)))
+                    {
+                        File.WriteAllText(gpio.getExportPath(), number.ToString());
+                    }
+                    for(int i=0; !Directory.Exists(gpio.getPinFolderPath()) && i < 100; i++)
+                    {
+                        if(i==99){
+                            Console.WriteLine("pin open timeout");
+                            return;
+                        }
+                    }
                     File.WriteAllText(gpio.getDirectionPath(number), GetKindText());
                 }
             }
@@ -75,7 +88,7 @@ namespace RaspberryPi
                 get => gpio.isDebugMode ? gpio.debugValue[number - 1] == true : File.ReadAllText(gpio.getValuePath(number)) == "1";
                 set
                 {
-                    if (gpio.isDebugMode) 
+                    if (gpio.isDebugMode)
                     {
                         gpio.debugValue[number - 1] = value;
                         Console.WriteLine($"gpio{number} is {value.ToString()}");
